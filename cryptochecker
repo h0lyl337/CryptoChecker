@@ -1,0 +1,43 @@
+from coinbase.wallet.client import Client
+import subprocess
+import time
+
+#add the crypto you wanna watch to this list
+crypto_list = ['ETH-USD', 'NU-USD']
+api_key = ''
+secrete_key = ''
+
+client = Client(api_key, secrete_key, api_version='YYYY-MM-DD')
+
+#get the price of all coins in crypto list.
+def get_price():
+    for crypto in crypto_list:
+        price = client.get_buy_price(currency_pair='{0}'.format(crypto))
+        print ('Current %s price is :%s' % (crypto, price.amount))
+        check_crypto(crypto, price.amount)
+
+#comepare the current price of the crypto to your desired price, just copy and paste an if function and change coin and price.
+def check_crypto(crypto, price):
+    if crypto == 'ETH-USD':
+        if float(price) <=3500:
+            print(price)
+            notify('Etherium is down at {0}'.format(float(price)))
+    
+    if crypto == 'NU-USD':
+        if float(price) <=0.35:
+            print(price)
+            notify('NU is down at {0}'.format(float(price)))
+
+#notify for kde when your price is hit or lower.
+def notify(message):
+    subprocess.call(["notify-send", "{0}".format(message)])
+
+#mainloop every 10 seconds
+def mainloop():
+    subprocess.call(["notify-send", "Starting Crypto checker!"]) 
+    while 1:
+        get_price()
+        time.sleep(10)
+
+
+mainloop()
